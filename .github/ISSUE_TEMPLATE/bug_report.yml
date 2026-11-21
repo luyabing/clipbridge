@@ -1,0 +1,70 @@
+name: Bug 报告
+description: 报告可复现的问题
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。提交前请先搜索现有 Issue，避免重复。
+        安全问题请勿公开提交，按 SECURITY.md 私密报告。
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: 控制面板底部显示的版本，或 commit SHA
+      placeholder: v1.0.0
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: 系统环境
+      description: 两端操作系统、桌面环境（X11/Wayland）、是否启用 AppIndicator
+      placeholder: Ubuntu 24.04 GNOME 46 + Windows 11 23H2
+    validations:
+      required: true
+  - type: dropdown
+    id: network
+    attributes:
+      label: 网络环境
+      options:
+        - 同一物理局域网
+        - libvirt / KVM 虚拟机
+        - 其它虚拟网络
+        - VPN / 跨网段
+        - 不确定
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 两端启动剪贴桥
+        2. 设置相同配对码
+        3. 复制 ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际结果
+      description: 如有报错，请粘贴 `--debug` 日志（注意不要包含配对码或剪贴板正文）
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 确认
+      options:
+        - label: 我已搜索现有 Issue
+          required: true
+        - label: 我已尝试手动填写 IP 连接
+          required: true

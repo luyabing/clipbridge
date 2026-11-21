@@ -1,0 +1,8 @@
+/dist/
+/clipbridge
+*.exe
+*.log
+*.log.old
+*.deb
+coverage.out
+.DS_Store

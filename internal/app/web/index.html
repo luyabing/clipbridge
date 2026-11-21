@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>剪贴桥 · 控制面板</title>
+  <link rel="icon" href="/icon.png">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <div class="brand">
+        <img class="logo" src="/icon.png" alt="">
+        <div>
+          <h1>剪贴桥 <span class="version" id="version"></span></h1>
+          <p>Ubuntu ⇄ Windows · 局域网剪贴板共享</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <span class="pill" id="statePill">连接中…</span>
+        <button class="btn ghost" id="pauseBtn" type="button">暂停同步</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="card hero">
+        <div class="hero-main">
+          <div class="kicker">本机</div>
+          <div class="device-name" id="deviceName">—</div>
+          <div class="device-meta">
+            <span id="osName"></span>
+            <span class="dot">·</span>
+            <span id="ipList">—</span>
+            <span class="dot">·</span>
+            <span>TCP <b id="tcpPort">—</b></span>
+          </div>
+        </div>
+        <div class="metrics">
+          <div class="metric"><b id="connCount">0</b><span>已连接</span></div>
+          <div class="metric"><b id="sentCount">0</b><span>已发送</span></div>
+          <div class="metric"><b id="recvCount">0</b><span>已接收</span></div>
+        </div>
+        <div class="transfer is-hidden" id="transfer">
+          <div class="transfer-head">
+            <span id="transferLabel">正在传输文件…</span>
+            <span id="transferPct"></span>
+          </div>
+          <div class="bar"><i id="transferBar"></i></div>
+        </div>
+      </section>
+
+      <div class="grid">
+        <section class="card">
+          <div class="card-head">
+            <h2>设备</h2>
+            <span class="tag" id="secureTag">未加密</span>
+          </div>
+
+          <h3>已连接</h3>
+          <div class="peer-list" id="connectedList">
+            <p class="empty">暂无连接，正在自动寻找…</p>
+          </div>
+
+          <h3>附近设备 <span class="count" id="nearbyCount">0</span></h3>
+          <div class="peer-list" id="nearbyList">
+            <p class="empty">正在寻找局域网设备…</p>
+          </div>
+
+          <h3>手动添加 IP</h3>
+          <form class="inline-form" id="peerForm">
+            <input id="peerAddr" placeholder="192.168.122.5 或 192.168.122.5:45876" autocomplete="off" spellcheck="false">
+            <button class="btn" type="submit">连接</button>
+          </form>
+          <div class="manual-list" id="manualList"></div>
+          <p class="note">
+            KVM 默认 NAT 网络里，Windows 通常可通过 <code>192.168.122.1</code> 访问本机；
+            本机连接 Windows 请填虚拟机的实际 IP。自动发现失败时，用 IP 手动添加即可。
+          </p>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2>设置</h2>
+            <button class="btn" id="saveBtn" type="button">保存设置</button>
+          </div>
+          <form id="settingsForm">
+            <label class="field">
+              <span>设备名称</span>
+              <input id="cfgName" maxlength="60" autocomplete="off">
+            </label>
+            <label class="field">
+              <span>配对码 <em>可选，但建议设置</em></span>
+              <div class="input-row">
+                <input id="cfgCode" type="password" maxlength="128" autocomplete="new-password" placeholder="两端填写相同内容">
+                <button class="mini" id="showCode" type="button">显示</button>
+                <button class="mini" id="copyCode" type="button">复制</button>
+              </div>
+            </label>
+            <p class="note warn" id="codeWarn">未设置配对码：同一局域网内运行剪贴桥的设备都能同步剪贴板。建议设置一个相同的配对码。</p>
+
+            <div class="toggles">
+              <label class="switch"><input type="checkbox" id="cfgAuto"><i></i><span>自动连接发现的设备</span></label>
+              <label class="switch"><input type="checkbox" id="cfgSkip"><i></i><span>跳过密码管理器标记的内容</span></label>
+              <label class="switch"><input type="checkbox" id="cfgText"><i></i><span>同步文本</span></label>
+              <label class="switch"><input type="checkbox" id="cfgImage"><i></i><span>同步图片</span></label>
+              <label class="switch"><input type="checkbox" id="cfgFiles"><i></i><span>同步文件</span></label>
+              <label class="switch"><input type="checkbox" id="cfgAutostart"><i></i><span>开机自动启动</span></label>
+            </div>
+          </form>
+
+          <div class="paths">
+            <button class="linkbtn" type="button" data-open="downloads">打开接收文件夹</button>
+            <button class="linkbtn" type="button" data-open="config">打开配置目录</button>
+          </div>
+          <div class="path" id="downloadPath"></div>
+          <div class="save-msg" id="saveMsg"></div>
+        </section>
+      </div>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>最近活动</h2>
+          <span class="hint">只在本机内存中保留事件摘要，不记录剪贴板内容</span>
+        </div>
+        <ul class="events" id="events">
+          <li class="empty">还没有活动。</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <span>剪贴桥 <b id="footVer"></b> · 控制面板只监听 127.0.0.1</span>
+      <button class="linkbtn danger" id="quitBtn" type="button">退出程序</button>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
